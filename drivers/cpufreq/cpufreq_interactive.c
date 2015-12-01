@@ -1256,7 +1256,7 @@ static ssize_t show_boost(struct cpufreq_interactive_tunables *tunables,
 static ssize_t store_boost(struct cpufreq_interactive_tunables *tunables,
 			   const char *buf, size_t count)
 {
-	int ret;
+/*	int ret;
 	unsigned long val;
 
 	if (!is_perfd(current->comm))
@@ -1276,7 +1276,7 @@ static ssize_t store_boost(struct cpufreq_interactive_tunables *tunables,
 		tunables->boostpulse_endtime = ktime_to_us(ktime_get());
 		trace_cpufreq_interactive_unboost("off");
 	}
-
+*/
 	return count;
 }
 
