@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012-2017 The Linux Foundation. All rights reserved.
+ * Copyright (c) 2012-2018 The Linux Foundation. All rights reserved.
  *
  * Previously licensed under the ISC license by Qualcomm Atheros, Inc.
  *
@@ -109,6 +109,7 @@
 
 /** Maximum time(ms)to wait for disconnect to complete **/
 #define WLAN_WAIT_TIME_DISCONNECT  5000
+#define WLAN_WAIT_DISCONNECT_ALREADY_IN_PROGRESS  1000
 #define WLAN_WAIT_TIME_STATS       800
 #define WLAN_WAIT_TIME_POWER       800
 #define WLAN_WAIT_TIME_COUNTRY     1000
@@ -342,26 +343,11 @@ struct linkspeedContext
    unsigned int magic;
 };
 
-/**
- * struct random_mac_context - Context used with hdd_random_mac_callback
- * @random_mac_completion: Event on which hdd_set_random_mac will wait
- * @adapter: Pointer to adapter
- * @magic: For valid context this is set to ACTION_FRAME_RANDOM_CONTEXT_MAGIC
- * @set_random_addr: Status of random filter set
- */
-struct random_mac_context {
-	struct completion random_mac_completion;
-	hdd_adapter_t *adapter;
-	unsigned int magic;
-	bool set_random_addr;
-};
-
 extern spinlock_t hdd_context_lock;
 
 #define STATS_CONTEXT_MAGIC 0x53544154   //STAT
 #define PEER_INFO_CONTEXT_MAGIC  0x52535349   /* PEER_INFO */
 #define POWER_CONTEXT_MAGIC 0x504F5752   //POWR
-#define SNR_CONTEXT_MAGIC   0x534E5200   //SNR
 #define LINK_CONTEXT_MAGIC  0x4C494E4B   //LINKSPEED
 #define LINK_STATUS_MAGIC   0x4C4B5354   //LINKSTATUS(LNST)
 #define TEMP_CONTEXT_MAGIC 0x74656d70   // TEMP (temperature)
@@ -800,6 +786,8 @@ struct hdd_station_ctx
    /**Connection information*/
    connection_info_t conn_info;
 
+   connection_info_t cache_conn_info;
+
    roaming_info_t roam_info;
 
 #if  defined (WLAN_FEATURE_VOWIFI_11R) || defined (FEATURE_WLAN_ESE) || defined(FEATURE_WLAN_LFR)
@@ -1237,6 +1225,9 @@ struct hdd_adapter_s
    sHddMib_t  hdd_mib;
 
    tANI_U8 sessionId;
+#ifdef FEATURE_WLAN_THERMAL_SHUTDOWN
+   bool netif_carrier_on;
+#endif
 
    /* Completion variable for session close */
    struct completion session_close_comp_var;
@@ -1341,7 +1332,7 @@ struct hdd_adapter_s
 #ifdef WLAN_FEATURE_TSF
    /* tsf value get from firmware */
    uint64_t cur_target_time;
-
+   vos_timer_t host_capture_req_timer;
 #ifdef WLAN_FEATURE_TSF_PLUS
    /* spin lock for read/write timestamps */
    spinlock_t host_target_sync_lock;
@@ -1452,7 +1443,6 @@ struct hdd_adapter_s
     struct hdd_netif_queue_history
             queue_oper_history[WLAN_HDD_MAX_HISTORY_ENTRY];
     struct hdd_netif_queue_stats queue_oper_stats[WLAN_REASON_TYPE_MAX];
-    struct power_stats_response *chip_power_stats;
 
     /* random address management for management action frames */
     spinlock_t random_mac_lock;
@@ -1731,6 +1721,21 @@ struct hdd_scan_chan_info {
 	uint32_t clock_freq;
 };
 
+#ifdef WLAN_FEATURE_SAP_TO_FOLLOW_STA_CHAN
+typedef struct sap_ch_switch_with_csa_ctx
+{
+    v_BOOL_t is_ch_sw_through_sta_csa;
+    u_int8_t tbtt_count;
+    v_U8_t csa_to_channel; //channel on which SAP will move after sending CSA
+    v_U8_t sap_chan_sw_pending; //SAP channel switch pending after STA disconnect
+    vos_timer_t hdd_ap_chan_switch_timer; //timer to init SAP chan switch
+    v_BOOL_t chan_sw_timer_initialized;
+    v_U8_t def_csa_channel_on_disc;
+    v_BOOL_t scan_only_dfs_channels;
+    struct mutex sap_ch_sw_lock; //Synchronize access to sap_chan_sw_pending
+}sap_ch_switch_ctx;
+#endif
+
 /** Adapter stucture definition */
 
 struct hdd_context_s
@@ -1800,6 +1805,13 @@ struct hdd_context_s
    v_BOOL_t isLoadInProgress;
 
    v_BOOL_t isUnloadInProgress;
+#ifdef FEATURE_WLAN_THERMAL_SHUTDOWN
+   bool system_suspended;
+   volatile int thermal_suspend_state;
+   spinlock_t thermal_suspend_lock;
+   struct workqueue_struct *thermal_suspend_wq;
+   struct delayed_work thermal_suspend_work;
+#endif
 
    /**Track whether driver has been suspended.*/
    hdd_ps_state_t hdd_ps_state;
@@ -2041,14 +2053,7 @@ struct hdd_context_s
 
     struct hdd_chain_rssi_context chain_rssi_context;
 
-#ifdef WLAN_FEATURE_MEMDUMP
-    uint8_t *fw_dump_loc;
-    uint32_t dump_loc_paddr;
-    vos_timer_t memdump_cleanup_timer;
     struct mutex memdump_lock;
-    bool memdump_in_progress;
-    bool memdump_init_done;
-#endif /* WLAN_FEATURE_MEMDUMP */
     uint16_t driver_dump_size;
     uint8_t *driver_dump_mem;
 
@@ -2122,6 +2127,12 @@ struct hdd_context_s
     /* the context that is capturing tsf */
     hdd_adapter_t *cap_tsf_context;
 #endif
+    /* flag to show whether moniotr mode is enabled */
+    bool is_mon_enable;
+    v_MACADDR_t hw_macaddr;
+#ifdef WLAN_FEATURE_SAP_TO_FOLLOW_STA_CHAN
+    sap_ch_switch_ctx  ch_switch_ctx;
+#endif//#ifdef WLAN_FEATURE_SAP_TO_FOLLOW_CHAN
 };
 
 /*---------------------------------------------------------------------------
@@ -2235,6 +2246,17 @@ void hdd_set_ssr_required(e_hdd_ssr_required value);
 
 VOS_STATUS hdd_enable_bmps_imps(hdd_context_t *pHddCtx);
 VOS_STATUS hdd_disable_bmps_imps(hdd_context_t *pHddCtx, tANI_U8 session_type);
+
+/**
+ * hdd_thermal_suspend_queue_work() - Queue a thermal suspend work
+ * @hdd_ctx:     Pointer to hdd_context_t
+ * @ms: Delay time in milliseconds to execute the work
+ *
+ * Queue thermal suspend work on the workqueue after delay
+ *
+ * Return: false if work was already on a queue, true otherwise.
+ */
+bool hdd_thermal_suspend_queue_work(hdd_context_t *hdd_ctx, unsigned long ms);
 
 void wlan_hdd_cfg80211_update_wiphy_caps(struct wiphy *wiphy);
 VOS_STATUS hdd_setIbssPowerSaveParams(hdd_adapter_t *pAdapter);
@@ -2458,8 +2480,6 @@ void hdd_get_fw_version(hdd_context_t *hdd_ctx,
 			uint32_t *major_spid, uint32_t *minor_spid,
 			uint32_t *siid, uint32_t *crmid);
 
-bool hdd_is_memdump_supported(void);
-
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,28))
 static inline void
 hdd_set_needed_headroom(struct net_device *wlan_dev, uint16_t len)
@@ -2662,4 +2682,27 @@ void hdd_chip_pwr_save_fail_detected_cb(void *hddctx,
  */
 int hdd_drv_cmd_validate(tANI_U8 *command, int len);
 
+/**
+ * wlan_hdd_monitor_mode_enable() - function to enable/disable monitor mode
+ * @hdd_ctx: pointer to HDD context
+ * @enable: 0 - disable, 1 - enable
+ *
+ * Return: 0 for success and error number for failure
+ */
+int wlan_hdd_monitor_mode_enable(hdd_context_t *hdd_ctx, bool enable);
+
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(4, 7, 0))
+static inline int
+hdd_wlan_nla_put_u64(struct sk_buff *skb, int attrtype, u64 value)
+{
+	return nla_put_u64(skb, attrtype, value);
+}
+#else
+static inline int
+hdd_wlan_nla_put_u64(struct sk_buff *skb, int attrtype, u64 value)
+{
+	return nla_put_u64_64bit(skb, attrtype, value,
+				 QCA_WLAN_VENDOR_ATTR_LL_STATS_PAD);
+}
+#endif
 #endif    // end #if !defined( WLAN_HDD_MAIN_H )
