@@ -312,6 +312,12 @@ config MSM_TRACK_FREQ_TARGET_INDEX
 	default n
 	depends on CPU_FREQ && ARCH_MSM
 
+config CPU_INPUT_BOOST
+	bool "CPU Input Boost"
+	help
+	  Boosts the CPU on touchscreen and touchpad input. Boost frequencies and
+	  durations are calculated automatically.
+
 menu "x86 CPU frequency scaling drivers"
 depends on X86
 source "drivers/cpufreq/Kconfig.x86"
