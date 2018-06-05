@@ -83,7 +83,7 @@
 #define MDP_TIME_PERIOD_CALC_FPS_US	1000000
 #define MDSS_BRIGHT_TO_BL_DIM(out, v) do {\
 			if (v < 5)\
-				out = 1;\
+				out = 7;\
 			else if (v < 15)\
 				out = v / 2;\
 			} while (0)
