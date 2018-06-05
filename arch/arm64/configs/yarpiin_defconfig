@@ -4566,3 +4566,4 @@ CONFIG_QMI_ENCDEC=y
 # Additional Settings
 #
 
+CONFIG_BOEFFLA_WL_BLOCKER=y 
