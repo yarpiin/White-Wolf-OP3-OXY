@@ -25,6 +25,7 @@
 #define MICRO_FREQUENCY_MIN_SAMPLE_RATE	(20000)
 
 static DEFINE_PER_CPU(struct cs_cpu_dbs_info_s, cs_cpu_dbs_info);
+static DEFINE_PER_CPU(struct cs_dbs_tuners *, cached_tuners);
 
 static inline unsigned int get_freq_target(struct cs_dbs_tuners *cs_tuners,
 					   unsigned int freq_mult)
@@ -55,7 +56,6 @@ static void cs_check_cpu(int cpu, unsigned int load)
 	struct cs_dbs_tuners *cs_tuners = dbs_data->tuners;
 	u64 now;
 
-	cpufreq_notify_utilization(policy, load);
 
 	/*
 	 * break out if we 'cannot' reduce the speed as the user might
@@ -134,7 +134,7 @@ static void cs_check_cpu(int cpu, unsigned int load)
 static void cs_dbs_timer(struct work_struct *work)
 {
 	struct cs_cpu_dbs_info_s *dbs_info = container_of(work,
-			struct cs_cpu_dbs_info_s, cdbs.work.work);
+			struct cs_cpu_dbs_info_s, cdbs.dwork.work);
 	unsigned int cpu = dbs_info->cdbs.cur_policy->cpu;
 	struct cs_cpu_dbs_info_s *core_dbs_info = &per_cpu(cs_cpu_dbs_info,
 			cpu);
