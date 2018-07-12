@@ -2,6 +2,52 @@
 Project name: White-Wolf-OP3-OXY
 
 
+12/07/2018
+
+  * version 23
+  * Linux 3.18.115 (Greg Kroah-Hartman) [dcf4a5a]
+  * netfilter: nf_log: don't hold nf_log_mutex during user access (Jann Horn) [1f0ad57]
+  * mtd: cfi_cmdset_0002: Change erase functions to check chip good only (Tokunori Ikegami) [61fecf4]
+  * mtd: cfi_cmdset_0002: Change erase functions to retry for error (Tokunori Ikegami) [a0036c9]
+  * mtd: cfi_cmdset_0002: Change definition naming to retry write operation (Tokunori Ikegami) [3fbf30a]
+  * mtd: rawnand: mxc: set spare area size register explicitly (Martin Kaiser) [6495bff]
+  * dm bufio: drop the lock when doing GFP_NOIO allocation (Mikulas Patocka) [df0c3b0]
+  * dm bufio: avoid sleeping while holding the dm_bufio lock (Douglas Anderson) [6161ee2]
+  * media: cx25840: Use subdev host data for PLL override (Brad Love) [8538baf]
+  * HID: debug: check length before copy_to_user() (Daniel Rosenberg) [17b56d6]
+  * HID: i2c-hid: Fix "incomplete report" noise (Jason Andryuk) [9e8fb84]
+  * ext4: add more mount time checks of the superblock (Theodore Ts'o) [c012635]
+  * ext4: clear i_data in ext4_inode_info when removing inline data (Theodore Ts'o) [b0423cd]
+  * ext4: make sure bitmaps and the inode table don't overlap with bg descriptors (Theodore Ts'o) [7cb8815]
+  * cifs: Fix infinite loop when using hard mount option (Paulo Alcantara) [6716067]
+  * scsi: sg: mitigate read/write abuse (Jann Horn) [517592f]
+  * net/sonic: Use dma_mapping_error() (Finn Thain) [f4e8cc6]
+  * net: qmi_wwan: Add Netgear Aircard 779S (Josh Hill) [63a4aaa]
+  * atm: zatm: fix memcmp casting (Ivan Bornyakov) [7045a09]
+  * netfilter: ebtables: handle string from userspace with care (Paolo Abeni) [aa085b1]
+  * ubi: fastmap: Correctly handle interrupted erasures in EBA (Richard Weinberger) [a846fb2]
+  * x86/boot: Fix early command-line parsing when matching at end (Dave Hansen) [aee5cb9]
+  * staging: android: ion: Return an ERR_PTR in ion_map_kernel (Laura Abbott) [8a96341]
+  * n_tty: Fix stall at n_tty_receive_char_special(). (Tetsuo Handa) [ff3984c]
+  * powersuspend: Replaced deprecated singlethread workqueue with updated schedule_work (robcore) [8e5c133]
+  * msm: thermal: Check temperature only if probed (myfluxi) [eed4769]
+  * mmc: queue: fix disable entropy contributions. (Ryan Andri) [68351c6]
+  * arm64: lib: memory utilities optimization (Hong-Mei Li) [54ad2a2]
+  * writeback: fix writeback cache thrashing (Namjae Jeon) [31e339e]
+  * Optimized Console FrameBuffer for upto 70% increase in Performance (gustavoss) [7b4be4b]
+  * reduced wakelocks by wlan (root) [cc832da]
+  * msm: mdss: kcal: revert upstream updates (engstk) [16b602d]
+  * adreno_tz: Remove unnecessary devfreq NULL check in tz_handler() (Hareesh Gundu) [45786e3]
+  * PM/devfreq: bw_hwmon: Unlock mutex in case of error (Pranav Vashi) [71abcb8]
+  * PM/devfreq: bw_hwmon: add mutex lock in polling interval case (Santosh Mardi) [22b199c]
+  * UPSTREAM: sched/fair: Avoid pulling all tasks in idle balancing (Yuyang Du) [0020290]
+  * UPSTREAM: sched: Improve load balancing in the presence of idle CPUs (Preeti U Murthy) [444a5ca]
+  * rcu: Restrict nocb kthreads to power cluster (Sultanxda) [55ade33]
+  * arm64: Don't force compilation of memlat devfreq governors (Sultanxda) [2e10d6f]
+  * PCI / PM: Avoid resuming more devices during system suspend (Rafael J. Wysocki) [29042b4]
+  * PCI / PM: Avoid resuming PCI devices during system suspend (Rafael J. Wysocki) [18e47fc]
+  * Revert "kernel: Fix massive cpufreq stats memory leaks" (Sultan Alsawaf) [07255d2]
+
 03/07/2018
 
   * version 22
