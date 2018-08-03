@@ -1,6 +1,25 @@
 
 Project name: White-Wolf-OP3-OXY
 
+03/08/2018
+
+  * version 25
+  * Fix "BACKPORT: arm64: cpufeature: Change read_cpuid() to use sysreg's mrs_s macro" (mifl) [914181f]
+  * crypto: msm: Select CRYPTO_DEV_QCE50 for the right ARCHs (Michael Bestas) [3d71dd0]
+  * iommu: Correct ARCH dependencies of MSM_IOMMU_V1 (Michael Bestas) [5906ef7]
+  * clk: msm: Build the right clock drivers for the right ARCH (Michael Bestas) [48a5cb7]
+  * kthread/smpboot: do not park in kthread_create_on_cpu() (Petr Mladek) [4f83ccd]
+  * Revert "Revert "rcu: Make RCU_FAST_NO_HZ take advantage of numbered callbacks"" (ahmedradaideh) [bf9b15b]
+  * Merge tag 'LA.UM.6.6.r1-09400-89xx.0' of vendor/qcom-opensource/wlan/qcacld-2.0 into lineage-15.1-caf-8996 (Michael Bestas) [50ea4fa]
+  * perf: disable cross_hotplug for l2 cache pmu. (Yabin Cui) [fa8e386]
+  * cpu-hotplug: convert cpu_hotplug_disabled to a counter (Vitaly Kuznetsov) [08c526f]
+  * yarpiin_defconfig: enable msm performance (Slawek) [44f00da]
+  * cpu-hotplug: Always use real time scheduling when hotplugging a CPU (Syed Rameez Mustafa) [d1b059e]
+  * msm: performance: prevent the driver from handling userspace min freq cpu boost hints. We'll use the standard cpu-boost input-boost functionality which gives users freedom to choose their own settings (franciscofranco) [aa7ebd2]
+  * Revert "Enhanced Slimbus CLK" (ObyeBoss) [f493d2e]
+  * Revert "sound: codecs: wcd9335: laster k's driver" (Laster K) [661ec32]
+  * Revert "Audio tweaks by @LuizPauloDamaceno" (kondors1995) [7ecd182]
+
 30/07/2018
 
 
