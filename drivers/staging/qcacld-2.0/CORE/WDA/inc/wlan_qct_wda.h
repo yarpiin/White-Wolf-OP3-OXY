@@ -1110,6 +1110,13 @@ tSirRetStatus uMacPostCtrlMsg(void* pSirGlobal, tSirMbMsg* pMb);
 #define WDA_THERM_THROT_SET_CONF_CMD          SIR_HAL_THERM_THROT_SET_CONF_CMD
 #define WDA_THERMAL_MGMT_CMD                  SIR_HAL_THERM_MGMT_CMD
 
+#ifdef WLAN_FEATURE_MOTION_DETECTION
+#define WDA_SET_MOTION_DET_CONFIG             SIR_HAL_SET_MOTION_DET_CONFIG
+#define WDA_SET_MOTION_DET_ENABLE             SIR_HAL_SET_MOTION_DET_ENABLE
+#define WDA_SET_MOTION_DET_BASE_LINE_CONFIG   SIR_HAL_SET_MOTION_DET_BASE_LINE_CONFIG
+#define WDA_SET_MOTION_DET_BASE_LINE_ENABLE   SIR_HAL_SET_MOTION_DET_BASE_LINE_ENABLE
+#endif
+
 tSirRetStatus wdaPostCtrlMsg(tpAniSirGlobal pMac, tSirMsgQ *pMsg);
 
 #define HAL_USE_BD_RATE2_FOR_MANAGEMENT_FRAME 0x40 // Bit 6 will be used to control BD rate for Management frames

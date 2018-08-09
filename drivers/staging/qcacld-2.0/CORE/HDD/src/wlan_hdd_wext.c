@@ -2467,7 +2467,8 @@ static int __iw_set_bitrate(struct net_device *dev,
     hdd_adapter_t *pAdapter = WLAN_HDD_GET_PRIV_PTR(dev);
     hdd_wext_state_t *pWextState;
     hdd_station_ctx_t *pHddStaCtx = WLAN_HDD_GET_STATION_CTX_PTR(pAdapter);
-    v_U8_t supp_rates[WNI_CFG_SUPPORTED_RATES_11A_LEN];
+    uint8_t supp_rates[WNI_CFG_SUPPORTED_RATES_11A_LEN +
+			WNI_CFG_SUPPORTED_RATES_11B_LEN];
     v_U32_t a_len = WNI_CFG_SUPPORTED_RATES_11A_LEN;
     v_U32_t b_len = WNI_CFG_SUPPORTED_RATES_11B_LEN;
     v_U32_t i, rate;
@@ -2507,7 +2508,7 @@ static int __iw_set_bitrate(struct net_device *dev,
                         supp_rates, &a_len) == eHAL_STATUS_SUCCESS) &&
                 (ccmCfgGetStr(WLAN_HDD_GET_HAL_CTX(pAdapter),
                         WNI_CFG_SUPPORTED_RATES_11B,
-                        supp_rates, &b_len) == eHAL_STATUS_SUCCESS))
+                        supp_rates + a_len, &b_len) == eHAL_STATUS_SUCCESS))
             {
                 for (i = 0; i < (b_len + a_len); ++i)
                 {
@@ -7077,6 +7078,42 @@ static int __iw_setint_getnone(struct net_device *dev,
             ret = hdd_set_tdls_secoffchanneloffset(pHddCtx, set_value);
 	    break;
 	}
+#endif
+#ifdef WLAN_FEATURE_MOTION_DETECTION
+        case WE_MOTION_DET_START_STOP:
+            {
+                tSirMotionDetEnable enable;
+
+                if ( (set_value != 1) && (set_value != 0)) {
+                     hddLog(LOGE, FL("Invalid value %d in mt_start"),
+                             set_value);
+                    return -EINVAL;
+                }
+
+                enable.vdev_id = (int)pAdapter->sessionId;
+                enable.enable = set_value;
+
+		if (set_value == 0) {
+			pAdapter->motion_detection_mode = 0;
+		}
+                sme_MotionDetEnable(hHal, &enable);
+            }
+            break;
+        case WE_MOTION_DET_BASE_LINE_START_STOP:
+            {
+                tSirMotionDetBaseLineEnable enable;
+
+                if ( (set_value != 1) && (set_value != 0)) {
+                     hddLog(LOGE, FL("Invalid value %d in mt_bl_start"),
+                             set_value);
+                    return -EINVAL;
+                }
+
+                enable.vdev_id = (int)pAdapter->sessionId;
+                enable.enable = set_value;
+                sme_MotionDetBaseLineEnable(hHal, &enable);
+            }
+            break;
 #endif
         default:
         {
