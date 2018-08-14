@@ -402,9 +402,19 @@ static int read_data_block(struct squashfs_read_request *req, int length,
 		req->bytes_uncompressed = &bytes_uncompressed;
 	}
 
-	TRACE("Data block @ 0x%llx, %scompressed size %d, src size %d\n",
-	      req->index, req->compressed ? "" : "un", req->length,
-	      req->output->length);
+	if (compressed) {
+		if (!msblk->stream)
+			goto read_failure;
+		length = squashfs_decompress(msblk, bh, b, offset, length,
+			output);
+		if (length < 0)
+			goto read_failure;
+	} else {
+		/*
+		 * Block is uncompressed.
+		 */
+		int in, pg_offset = 0;
+		void *data = squashfs_first_page(output);
 
 	ret = squashfs_bio_submit(req);
 	if (ret)
