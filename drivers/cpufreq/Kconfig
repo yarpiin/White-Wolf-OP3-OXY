@@ -127,11 +127,6 @@ config CPU_FREQ_DEFAULT_GOV_GABRIEL
 	select CPU_FREQ_GOV_GABRIEL
 	help
 
-config CPU_FREQ_DEFAULT_GOV_DESPAIR
-	bool "despair"
-	select CPU_FREQ_GOV_DESPAIR
-	help
-
 config CPU_FREQ_DEFAULT_GOV_NIGHTMARE
 	bool "nightmare"
 	select CPU_FREQ_GOV_NIGHTMARE
@@ -263,10 +258,6 @@ config CPU_FREQ_GOV_CONSERVATIVE
 
 	  If in doubt, say N.
 
-config CPU_FREQ_GOV_DESPAIR
-	tristate "'despair' cpufreq governor"
-	depends on CPU_FREQ
-	
 config CPU_FREQ_GOV_NIGHTMARE
 	tristate "'nightmare' cpufreq governor"
 	depends on CPU_FREQ
