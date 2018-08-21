@@ -1788,6 +1788,7 @@ struct task_struct {
 	unsigned int	sequential_io_avg;
 #endif
 	atomic64_t *concurrent_active_time;
+	atomic64_t *concurrent_policy_time;
 	u64 utask_tag;
 	u64 utask_tag_base;
 	int etask_claim;
