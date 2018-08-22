@@ -20,7 +20,7 @@ TOOLCHAIN_DIR="/home/yarpiin/Android/Toolchains"
 
 # Kernel Details
 BASE_YARPIIN_VER="WHITE.WOLF.OP3.OXY.ORE"
-VER=".026"
+VER=".027"
 YARPIIN_VER="$BASE_YARPIIN_VER$VER"
 
 # Vars
