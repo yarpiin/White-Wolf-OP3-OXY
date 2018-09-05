@@ -139,7 +139,7 @@ static struct completion thermal_monitor_complete;
 
 /* Always enable Intelli Thermal and core control on boot */
 static int intelli_enabled = 1;
-static bool core_control_enabled = true;
+static bool core_control_enabled = false;
 
 /* dummy parameter for rom thermal and apps */
 static bool enabled = true;
