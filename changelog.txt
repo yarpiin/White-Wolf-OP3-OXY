@@ -1,6 +1,13 @@
 
 Project name: White-Wolf-OP3-OXY
 
+13/10/2018
+
+  * version 30
+  * staging: ion: msm: Apply d82ad70e8aff to msm_ion_custom_ioctl (Nathan Chancellor) [7890021]
+  * BACKPORT: staging: android: ion: Pull out ion ioctls to a separate file (Laura Abbott) [9ed3d04]
+  * Merge 3.18.124 into oneplus/QC8996_O_8.0.0 (Nathan Chancellor) [623479b]
+
 11/10/2018
 
 
