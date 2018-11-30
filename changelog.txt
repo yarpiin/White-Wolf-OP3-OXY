@@ -1,6 +1,12 @@
 
 Project name: White-Wolf-OP3-OXY
 
+30/11/2018
+
+  * version 32
+  * Merge 3.18.127 into oneplus/QC8996_O_8.0.0 (Nathan Chancellor) [316d934]
+  * Merge 3.18.126 into oneplus/QC8996_O_8.0.0 (Nathan Chancellor) [6873300]
+
 19/11/2018
 
   * version 31
